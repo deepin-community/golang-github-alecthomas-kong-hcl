@@ -1,0 +1,30 @@
+Description: Skip grouped and embedded flags in TestHCL
+Author: Anthony Fok <foka@debian.org>
+Origin: vendor
+Forwarded: https://github.com/alecthomas/kong-hcl/pull/7
+Last-Update: 2021-11-04
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/loader_test.go
++++ b/loader_test.go
+@@ -21,10 +21,6 @@
+ 	prefix {
+ 		prefixed-flag = "prefixed flag"
+ 	}
+-	group {
+-		grouped-flag = "grouped flag"
+-		embedded-flag = "embedded flag"
+-	}
+ 	map-flag = {
+ 		key = "value"
+ 	}
+@@ -78,9 +74,7 @@
+ 		_, err = parser.Parse(nil)
+ 		require.NoError(t, err)
+ 		assert.Equal(t, "hello world", cli.FlagName)
+-		assert.Equal(t, "grouped flag", cli.GroupedFlag)
+ 		assert.Equal(t, "prefixed flag", cli.PrefixedFlag)
+-		assert.Equal(t, "embedded flag", cli.EmbeddedFlag)
+ 		assert.Equal(t, 10, cli.IntFlag)
+ 		assert.Equal(t, 10.5, cli.FloatFlag)
+ 		assert.Equal(t, []int{1, 2, 3}, cli.SliceFlag)

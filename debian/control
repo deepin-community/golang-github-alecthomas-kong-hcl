@@ -1,15 +1,39 @@
-Source: template-repository
-Section: unknown
+Source: golang-github-alecthomas-kong-hcl
+Maintainer: Debian Go Packaging Team <team+pkg-go@tracker.debian.org>
+Uploaders: Anthony Fok <foka@debian.org>
+Section: golang
+Testsuite: autopkgtest-pkg-go
 Priority: optional
-Maintainer: Tsic404 <liuheng@deepin.org>
-Build-Depends: debhelper (>= 11)
-Standards-Version: 4.1.3
-Homepage: https://github.com/deepin-community/template-repository
-#Vcs-Browser: https://salsa.debian.org/debian/deepin-community-template-repository
-#Vcs-Git: https://salsa.debian.org/debian/deepin-community-template-repository.git
+Build-Depends: debhelper-compat (= 13),
+               dh-golang
+Build-Depends-Indep: golang-any,
+                     golang-github-alecthomas-kong-dev (>= 0.2.16),
+                     golang-github-hashicorp-hcl-dev (>= 1.0.0),
+                     golang-github-pkg-errors-dev,
+                     golang-github-stretchr-testify-dev
+Standards-Version: 4.6.0
+Vcs-Browser: https://salsa.debian.org/go-team/packages/golang-github-alecthomas-kong-hcl
+Vcs-Git: https://salsa.debian.org/go-team/packages/golang-github-alecthomas-kong-hcl.git
+Homepage: https://github.com/alecthomas/kong-hcl
+Rules-Requires-Root: no
+XS-Go-Import-Path: github.com/alecthomas/kong-hcl
 
-Package: template-repository
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Package: golang-github-alecthomas-kong-hcl-dev
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends},
+         golang-github-alecthomas-kong-dev (>= 0.2.16),
+         golang-github-hashicorp-hcl-dev (>= 1.0.0),
+         golang-github-pkg-errors-dev,
+         golang-github-stretchr-testify-dev
+Description: Kong configuration loader for HCL (Go library)
+ github.com/alecthomas/kong-hcl is a Kong configuration loader for HCL
+ implemented for the Go programming language.
+ .
+ It may be used like so:
+ .
+     var cli struct {
+             Config kong.ConfigFlag `help:"Load configuration."`
+     }
+     parser, err := kong.New(&cli, kong.Configuration(konghcl.Loader,
+             "/etc/myapp/config.hcl", "~/.myapp.hcl))

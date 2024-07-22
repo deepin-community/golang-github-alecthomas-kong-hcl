@@ -1,8 +1,8 @@
-# A Kong configuration loader for HCL [![](https://godoc.org/github.com/alecthomas/kong-hcl?status.svg)](http://godoc.org/github.com/alecthomas/kong-hcl) [![CircleCI](https://img.shields.io/circleci/project/github/alecthomas/kong-hcl.svg)](https://circleci.com/gh/alecthomas/kong-hcl)
+# A Kong configuration loader for HCL [![](https://godoc.org/github.com/alecthomas/kong-hcl?status.svg)](http://godoc.org/github.com/alecthomas/kong-hcl/v2) [![CircleCI](https://img.shields.io/circleci/project/github/alecthomas/kong-hcl.svg)](https://circleci.com/gh/alecthomas/kong-hcl)
 
-This is version 1.x of kong-hcl. [Version 2](https://github.com/alecthomas/kong-hcl/tree/master/v2)
-of this package uses the HCL2 library but is otherwise largely a drop-in replacement
-(see the README for details).
+This is version 2.x of this package which uses the HCL2 library. For most config files it should 
+be a drop-in replacement, but for any codebases using `konghcl.DecodeValue()` you will need to
+update your Go structs to include [HCL tags](https://pkg.go.dev/github.com/hashicorp/hcl/v2@v2.4.0/gohcl?tab=doc).
 
 Use it like so:
 
@@ -21,17 +21,21 @@ More complex structures can be loaded directly into flag values by implementing 
 The value can either be a HCL(/JSON) fragment, or a path to a HCL file that will be loaded. Both
 can be specified on the command-line or config file.
 
+Note that kong-hcl 2.x uses the HCL2 library, which is *much* stricter about Go tags.
+See the [HCL2 documentation](https://pkg.go.dev/github.com/hashicorp/hcl/v2@v2.4.0/gohcl?tab=doc)
+for details.
+
 eg.
 
 ```go
 type NestedConfig struct {
-	Size int
-	Name string
+	Size int    `hcl:"size,optional"`
+	Name string `hcl:"name,optional"`
 }
 
 type ComplexConfig struct {
-	Key bool
-	Nested map[string]NestedConfig
+	Key bool                       `hcl:"key,optional"`
+	Nested map[string]NestedConfig `hcl:"nested,optional"`
 }
 
 func (c *ComplexConfig) Decode(ctx *kong.DecodeContext) error {
@@ -69,15 +73,14 @@ Additionally, HCL block keys will be used as a hyphen-separated prefix when look
 
 ## Example
 
-The following Kong CLI:
+The following HCL configuration file...
 
-```go
-type CLI struct {
-  Debug bool
-  DB struct {
-    DSN string
-    Trace bool
-  } `embed:"" prefix:"db-"`
+```hcl
+debug = true
+
+db {
+    dsn = "root@/database"
+    trace = true
 }
 ```
 
@@ -87,15 +90,4 @@ Maps to the following flags:
 --debug
 --db-dsn=<string>
 --db-trace
-```
-
-And can be configured via the following HCL configuration file...
-
-```hcl
-debug = true
-
-db {
-    dsn = "root@/database"
-    trace = true
-}
 ```
